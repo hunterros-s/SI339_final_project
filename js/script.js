@@ -22,5 +22,3 @@ document.addEventListener("DOMContentLoaded", function() {
 color_picker.addEventListener("input", function() {
     set_color(this.value);
 })
-
-color_picker_wrapper.style.backgroundColor = color_picker.value;
