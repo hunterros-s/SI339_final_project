@@ -17,17 +17,35 @@
         <nav>links here</nav>
     </header>
     <main>
-        <h1>h1 header</h1>
-        <h2>h2 header</h2>
-        <h3>h3 header</h3>
-        <h4>h4 header</h4>
-        <h5>h5 header</h5>
-        <h6>h6 header</h6>
-        <p>selected text non selected text</p>
+        <div class="blog-item">
+            <h2 class="title"><a href="test">
+                A scalable web search engine
+            </a></h2>
+            <time datetime="2023-12-3">
+                Dec 3, 2023
+            </time>
+            <p>
+                This project implements a search engine with an inverted index built using MapReduce. It has an Index Server that provides search results via a REST API by combining TF-IDF and PageRank scoring. It also includes a Search Server web application that queries the Index Server and displays the top ranked results to users.
+            </p>
+            <a href="test.com">read more ⟶</a>
+        </div>
+        <div class="blog-item">
+            <h2 class="title"><a href="test">
+                Instagram clone
+            </a></h2>
+            <time datetime="2023-10-15">
+                Oct 15, 2023
+            </time>
+            <p>
+                The project involves building an Instagram clone called Insta485 with a client-side React.js front-end that displays a dynamic feed of posts, comments, and likes by fetching data from a custom-built REST API back-end using Python/Flask. It covers concepts like component rendering, state management, API integration, and end-to-end testing while reusing some server-side code from a previous project for authentication and user pages.
+            </p>
+            <a href="test.com">read more ⟶</a>
+        </div>
     </main>
     <footer>
         <a href="mailto:hlross@umich.edu">email</a>
         <a href="https://github.com/hunterros-s">github</a>
+        <label for="color-picker">color: </label>
         <span id="color-picker-wrapper">
             <input id="color-picker" type="color" value="#ff5e00" />
         </span>
