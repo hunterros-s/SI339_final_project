@@ -1,5 +1,7 @@
+/* Variable to store element color styling */
 :root {
     --main-color:#ff5e00;
+    --box-shadow: 1px 1px 2px 0px #0000005c;
 }
 
 html {
@@ -7,10 +9,6 @@ html {
     font-family: 'Roboto Mono', monospace;
     font-size: 15px;
     line-height: 1.6em;
-}
-
-*:focus {
-    --focus-ring-color: var(--main-color);
 }
 
 body {
@@ -23,7 +21,7 @@ body {
 }
 
 ::selection {
-    background:var(--main-color);
+    background: var(--main-color);
     color: #fff;
 }
 
@@ -57,7 +55,10 @@ a {
 a:hover {
     background-color: var(--main-color);
     color: #fff;
+    box-shadow: var(--box-shadow);
 }
+
+/* Footer styling */
 footer {
     margin-top: 3em;
     display: flex;
@@ -79,7 +80,7 @@ input[type="color"] {
 #color-picker-wrapper {
     width: 1rem;
     height: 1rem;
-    box-shadow: 1px 1px 2px 0px #0000005c;
+    box-shadow: var(--box-shadow);
 }
 #color-picker-wrapper:focus-within {
     outline: 1px dotted #212121;
