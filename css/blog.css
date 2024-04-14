@@ -69,6 +69,26 @@ a:hover {
     border: none;
 }
 
+p {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* style in-line code blocks */
+code {
+    border-radius: 5px; 
+    -moz-border-radius: 5px; 
+    -webkit-border-radius: 5px; 
+    border: 1px solid #BCBEC0;
+    padding: 2px;
+}
+
+
+/* overwrite html5reset. this is for code blocks */
+pre {
+    white-space: pre;
+}
+
 /* Footer styling */
 footer {
     margin-top: 3em;

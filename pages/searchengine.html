@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/resources/favicon.ico">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+    <link rel="stylesheet" href="/css/html5reset.css">
+    <link rel="stylesheet" href="/css/blog.css">
+    <!-- Render markdown -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <!-- stop render markdown -->
+    <title>searchengine.html | Hunter Ross</title>
+</head>
+<body>
+    <header>
+        <div>
+            <h1 class="no-margin-top"><a href="..">hunter ross</a></h1>
+        </div>
+        <nav>links here</nav>
+    </header>
+    <main>
+        <h2>A scalable web search engine.</h2>
+        <p> I built a fully-functional, scalable search engine similar to Google or Bing completely from scratch. This project involved applying concepts from information retrieval, parallel data processing, service architectures, and so much more.</p>
+        <h3>inverted index pipeline</h3>
+        <p>The project began by tackling the crux of any search engine - the inverted index. We had to design and implement a pipeline of MapReduce jobs in Python that could construct an inverted index from a large dataset of crawled Wikipedia pages (mostly focused on topics related to Michigan and technology). Each MapReduce phase required careful thought around how to parse, clean, and process the raw HTML data to calculate accurate term frequencies, document frequencies, and normalization factors.</p>
+        <p>My journey began by designing a multi-stage MapReduce pipeline in Python that could ingest thousands of crawled Wikipedia documents and systematically transform that unstructured data into a comprehensive, queryable inverted index.</p>
+        <p>I decided to split my pipeline into three high-level jobs. Job 0 was the simplest - just a quick mapper and reducer to count the total number of documents, which I'd need for later inverse document frequency calculations.</p>
+        <pre><code># reduce0.py
+def main():
+    """Count the number of input lines."""
+    count = 0
+    for _ in sys.stdin:
+        count += 1
+    print(count)</code></pre>
+        <!-- put some simple code here -->
+        <p>Job 1 was where the real work began. The mapper's role was to open each raw HTML file, extract just the visible text content using BeautifulSoup, clean it by removing formatting and stopwords, and then emit each term paired with the document ID. I spent hours dealing with edge cases around Unicode handling, newline characters, and other messy details lurking in the data.</p>
+        <p>The reducer for Job 1 took those parsed out terms and calculated documentary frequency information for each term by counting its occurrences across documents. This relatively straightforward reducer was just setting the stage for the computationally heavy lifting that Job 2 would tackle.</p>
+        <p>Implementing Job 2 was arguably the most complex part of the whole pipeline. Aside from the mathematical nuances of calculating inverse document frequencies and normalization factors, I also had to determine how to organize the Mapper's output to facilitate the Reducer's grouped processing. I went through several redesigns before settling on using the document ID modulo 3 as the key - this set me up to ultimately segment the inverted index across three files in the final output.</p>
+        <p>Inside the Job 2 reducer, I first had to compute the inverse document frequency for each term by counting the total documents and comparing it against the number of documents that contained that term. From there, I cycled through each term group to calculate term frequencies per document as well as the normalization factors.</p>
+        <pre><code># reduce2.py
+def reduce_one_group(group):
+    """Output final calculations."""
+    # Make group re-iterable
+    group = list(group)
+
+    # Calculate the normalization factor for each document
+    # Additionally, calculate inverse document frequency
+    normalization_factor = {}
+    inv_doc_freq = {}
+    for line in group:
+        terms = line.partition("\t")[2].strip()
+        word, docfreq, docid, count = terms.split(' ')
+        docfreq = int(docfreq)
+        count = int(count)
+
+        inv_doc_freq[word] = math.log10(float(num_documents) / float(docfreq))
+
+        if docid not in normalization_factor:
+            normalization_factor[docid] = 0
+        normalization_factor[docid] += (inv_doc_freq[word] * count) ** 2
+    # We don't take the square root of the normalization factor. this is for speed/efficiency purposes
+</code></pre>
+        <p>Of course, nothing worked perfectly at first. I ran into numerous edge cases like terms that appeared in no documents, empty documents, and other smaller bugs that required careful thinking and debugging to overcome. Writing unit tests against known expected outputs was crucial for verifying my MapReduce jobs along the way.</p>
+
+        <h3>index server</h3>
+        <p>One of the most critical components of my search engine is the Index server. This server is responsible for handling search queries and returning relevant results quickly and accurately. At its core, the Index server is a RESTful API application that returns search results in JSON format.</p>
+        <p>The beauty of the Index server lies in its architecture. Instead of relying on a single, monolithic index, the Index server utilizes multiple inverted index segments. Each segment is served by its own dedicated Index server instance. This distributed approach not only enhances performance but also provides scalability and fault tolerance.</p>
+
+        <p>When a user enters a search query, the Search server (a separate component) makes REST API calls to each Index server segment. The individual Index servers process the query, leveraging advanced techniques such as term frequency-inverse document frequency (TF-IDF) and PageRank to rank the relevance of documents. The Search server then intelligently combines the results from all segments, ensuring a comprehensive and well-ordered set of search results.</p>
+        <pre><code>@index.app.route('/api/v1/hits/')
+def get_hits():
+    """Get the search results."""
+    terms = clean_input(flask.request.args.get('q'))
+    weight = float(flask.request.args.get('w', default=0.5))
+
+    term_dict = count_terms(terms)
+
+    # Select documents from the in-memory inverted index data structure
+    # that contain every word in the cleaned query.
+    doc_set = get_docs(term_dict)
+
+    # Remove words that are not in the database
+    term_dict = {
+        k: v
+        for k, v in term_dict.items()
+        if k in index.app.config['WORDINDEX']
+    }
+    # terms = [term for term in terms if term in index.app.config['WORDINDEX']]
+
+    # Create the query vector
+    query_vector = [
+        index.app.config['WORDINDEX'][w]['idf'] * c
+        for w, c in term_dict.items()
+    ]
+
+    # Compute the normalization factor for the query.
+    query_n_fact = math.sqrt(sum(x ** 2 for x in query_vector))
+
+    hits = []
+    # Calculate tdf-idf
+    for doc in doc_set:
+        doc_vector, n_fact_sq = pop_docv_nfact(doc, term_dict)
+
+        # Compute the document normalization factor
+        doc_n_fact = math.sqrt(n_fact_sq[doc])
+        if doc_n_fact == 0:
+            continue
+
+        tfidf = dot(doc_vector, query_vector) / (query_n_fact * doc_n_fact)
+        pagerank = index.app.config['PAGERANK'][doc]
+
+        hits.append({
+            'docid': doc,
+            'score': weight * pagerank + (1 - weight) * tfidf
+        })
+
+    context = {
+        "hits": sorted(hits, key=lambda x: x['score'], reverse=True)
+    }
+
+    return flask.jsonify(**context)</code></pre>
+
+        <p>The Index server also incorporates PageRank, an algorithm developed by Larry Page and Sergey Brin at Stanford University in 1996. The algorithm works on the premise that pages with more inbound links from authoritative sources are likely to be more valuable. PageRank assigns a numerical value to each page, indicating its importance within the web graph. The calculation involves iterative processes where pages distribute their PageRank value among outbound links, considering factors like the number of outbound links and a damping factor that simulates a surfer randomly clicking on links.</p>
+        <h3>search server</h3>
+        <p>At the core of the Search server is a flask-based backend that communicates with the Index servers through REST API requests. These Index servers hold inverted index segments, which are used for quick and accurate search results retrieval. When a user submits a query, the Search server back-end makes multiple parallel API requests to each Index server.</p>
+        <pre><code>search.app.config['SEARCH_INDEX_SEGMENT_API_URLS'] = [
+    "http://localhost:9000/api/v1/hits/",
+    "http://localhost:9001/api/v1/hits/",
+    "http://localhost:9002/api/v1/hits/",
+]</code></pre>
+        <p>This code is designed to efficiently handle concurrent requests to multiple search server URLs and merge their results based on a scoring system. The <code>make_request</code> function constructs a GET request with specified parameters and handles any exceptions that may occur during the request. The <code>search_results</code> function orchestrates the concurrent requests using a <code>ThreadPoolExecutor</code>, ensuring three simultaneous requests. It then combines and merges the hits from all responses, sorts them based on their scores, and limits the final result to the top 10 items. This approach optimizes the search process by leveraging parallelism and prioritizing the most relevant search results.</p>
+        <pre><code>def make_request(url, q, w, timeout=10):
+    """Make a request to the search server."""
+    params = {'q': q, 'w': w}
+    try:
+        response = requests.get(url, params=params, timeout=timeout)
+        response.raise_for_status()  # Raise an HTTPError for bad responses
+        return response.json()
+    except requests.RequestException as e:
+        print(f"Error making request to {url}: {e}")
+        print("(!) Verify if index servers are on.")
+        return None
+
+
+def search_results(query, weight):
+    """Return the seach results from the given query and weight."""
+    urls = search.app.config['SEARCH_INDEX_SEGMENT_API_URLS']
+
+    # Function to make a request with given query and weight
+    def make_request_with_params(url):
+        return make_request(url, query, weight)
+
+    # Create a ThreadPoolExecutor with 3 threads
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+        # Make requests concurrently using the executor
+        results = list(executor.map(make_request_with_params, urls))
+
+    # Remove None elements using list comprehension
+    results = [r for r in results if r is not None]
+
+    # Combine the hits from multiple results into a single list
+    all_hits = []
+    for result in results:
+        all_hits.extend(result["hits"])
+
+    # Merge the hits based on the "score" key
+    merged_hits = heapq.merge(
+        *[result["hits"] for result in results],
+        key=lambda x: x["score"],
+        reverse=True
+    )
+
+    # Convert the merged_hits generator to a list for easier access
+    results = list(merged_hits)
+
+    # Limit results to 10 items
+    results = results[:search.config.RESULT_COUNT]
+
+    return convert_results(results)</code></pre>
+    </main>
+    <footer>
+        <a href="mailto:hlross@umich.edu">email</a>
+        <a href="https://github.com/hunterros-s">github</a>
+        <label for="color-picker">color: </label>
+        <span id="color-picker-wrapper">
+            <input id="color-picker" type="color" value="#ff5e00" />
+        </span>
+    </footer>
+    <script src="/js/script.js"></script>
+</body>
+</html>
