@@ -20,6 +20,13 @@ body {
     word-wrap: break-word;
 }
 
+img {
+    height: 36rem;
+    padding: 2rem;
+    display: block;
+    margin: auto;
+}
+
 ::selection {
     background: var(--main-color);
     color: #fff;
@@ -76,9 +83,7 @@ p {
 
 /* style in-line code blocks */
 code {
-    border-radius: 5px; 
-    -moz-border-radius: 5px; 
-    -webkit-border-radius: 5px; 
+    border-radius: 2px; 
     border: 1px solid #BCBEC0;
     padding: 2px;
 }
