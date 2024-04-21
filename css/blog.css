@@ -2,13 +2,18 @@
 :root {
     --main-color:#ff5e00;
     --box-shadow: 1px 1px 2px 0px #0000005c;
+    --text-color: #232333;
+    --selection-text-color: #fff;
+    --background-color: #fff;
+    --outline-color: #BCBEC0;
 }
 
 html {
-    color: #232333;
+    color: var(--text-color);
     font-family: 'Roboto Mono', monospace;
     font-size: 15px;
     line-height: 1.6em;
+    background-color: var(--background-color);
 }
 
 body {
@@ -29,7 +34,7 @@ img {
 
 ::selection {
     background: var(--main-color);
-    color: #fff;
+    color: var(--selection-text-color);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -65,7 +70,7 @@ a {
 }
 a:hover {
     background-color: var(--main-color);
-    color: #fff;
+    color: var(--selection-text-color);
     box-shadow: var(--box-shadow);
 }
 
@@ -84,7 +89,7 @@ p {
 /* style in-line code blocks */
 code {
     border-radius: 2px; 
-    border: 1px solid #BCBEC0;
+    border: 1px solid var(--outline-color);
     padding: 2px;
 }
 
@@ -117,6 +122,7 @@ input[type="color"] {
     width: 1rem;
     height: 1rem;
     box-shadow: var(--box-shadow);
+    margin-right: 1rem;
 }
 #color-picker-wrapper:focus-within {
     outline: 1px dotted #212121;
