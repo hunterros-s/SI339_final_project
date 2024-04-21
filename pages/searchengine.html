@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script>hljs.highlightAll();</script>
+    <link rel="stylesheet" href="../css/dracula.css">
     <!-- stop render markdown -->
     <title>searchengine.html | Hunter Ross</title>
 </head>
@@ -70,6 +71,7 @@ def reduce_one_group(group):
         <p>The beauty of the Index server lies in its architecture. Instead of relying on a single, monolithic index, the Index server utilizes multiple inverted index segments. Each segment is served by its own dedicated Index server instance. This distributed approach not only enhances performance but also provides scalability and fault tolerance.</p>
 
         <p>When a user enters a search query, the Search server (a separate component) makes REST API calls to each Index server segment. The individual Index servers process the query, leveraging advanced techniques such as term frequency-inverse document frequency (TF-IDF) and PageRank to rank the relevance of documents. The Search server then intelligently combines the results from all segments, ensuring a comprehensive and well-ordered set of search results.</p>
+        <!-- put like href to tf-idf wikipedia? -->
         <pre><code>@index.app.route('/api/v1/hits/')
 def get_hits():
     """Get the search results."""
