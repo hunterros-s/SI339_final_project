@@ -36,11 +36,35 @@ function set_dark_theme() {
     document.documentElement.style.setProperty("--text-color", "#fff");
     document.documentElement.style.setProperty("--background-color", "#1f1f21");
     document.documentElement.style.setProperty("--outline-color", "#2d2d2d");
+    document.documentElement.style.setProperty("--time-color", "#c7c7c7");
+
+    // Set CSS variables for the dark theme
+    document.documentElement.style.setProperty("--background-code", "#2f3036");
+    document.documentElement.style.setProperty("--color-built-in", "#8be9fd");
+    document.documentElement.style.setProperty("--color-keyword", "#ff79c6");
+    document.documentElement.style.setProperty("--color-text", "#f8f8f2");
+    document.documentElement.style.setProperty("--color-italic", "#50fa7b");
+    document.documentElement.style.setProperty("--color-string", "#f1fa8c");
+    document.documentElement.style.setProperty("--color-number", "#bd93f9");
+    document.documentElement.style.setProperty("--color-comment", "#6272a4");
 }
+
+// light theme
 function set_light_theme() {
     document.documentElement.style.setProperty("--text-color", "#232333");
     document.documentElement.style.setProperty("--background-color", "#fff");
     document.documentElement.style.setProperty("--outline-color", "#BCBEC0");
+    document.documentElement.style.setProperty("--time-color", "#757575");
+
+    // Set CSS variables for the light theme
+    document.documentElement.style.setProperty("--background-code", "#f7f7f7");
+    document.documentElement.style.setProperty("--color-built-in", "#3e999f");
+    document.documentElement.style.setProperty("--color-keyword", "#f5871f");
+    document.documentElement.style.setProperty("--color-text", "#2f2d2d");
+    document.documentElement.style.setProperty("--color-italic", "#718c00");
+    document.documentElement.style.setProperty("--color-string", "#0022ea");
+    document.documentElement.style.setProperty("--color-number", "#8959a8");
+    document.documentElement.style.setProperty("--color-comment", "#8f958a");
 }
 
 const theme_enabled = localStorage.getItem("darkTheme");

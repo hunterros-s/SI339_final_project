@@ -6,6 +6,7 @@
     --selection-text-color: #fff;
     --background-color: #fff;
     --outline-color: #BCBEC0;
+    --time-color: #757575;
 }
 
 html {
@@ -53,7 +54,7 @@ h5::before { color: var(--main-color); content: '#### '; }
 h6::before { color: var(--main-color); content: '##### '; }
 
 time {
-    color: #757575;
+    color: var(--time-color);
 }
 
 header {
