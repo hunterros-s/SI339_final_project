@@ -60,7 +60,7 @@ function set_light_theme() {
     document.documentElement.style.setProperty("--background-code", "#fefefe");
     document.documentElement.style.setProperty("--color-built-in", "#008089");
     document.documentElement.style.setProperty("--color-keyword", "#7928a1");
-    document.documentElement.style.setProperty("--color-text", "#545454");
+    document.documentElement.style.setProperty("--color-text", "#232323");
     document.documentElement.style.setProperty("--color-italic", "#007faa");
     document.documentElement.style.setProperty("--color-string", "#008000");
     document.documentElement.style.setProperty("--color-number", "#aa5d00");

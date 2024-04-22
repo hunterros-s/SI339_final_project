@@ -63,7 +63,7 @@ def reduce_one_group(group):
         if docid not in normalization_factor:
             normalization_factor[docid] = 0
         normalization_factor[docid] += (inv_doc_freq[word] * count) ** 2
-    # We don't take the square root of the normalization factor. this is for speed/efficiency purposes
+    # We don't take the square root of the normalization factor.
 </code></pre>
         <p>Of course, nothing worked perfectly at first. I ran into numerous edge cases like terms that appeared in no documents, empty documents, and other smaller bugs that required careful thinking and debugging to overcome. Writing unit tests against known expected outputs was crucial for verifying my MapReduce jobs along the way.</p>
 

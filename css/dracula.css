@@ -10,6 +10,8 @@
  * @author Zeno Rocha <hi@zenorocha.com>
  */
 
+/* modified to use CSS variables by hunter ross. real colors are located in script.js */
+
 /* Define semantic CSS variables inside :root */
 :root {
   --background-code: #2f3036;
