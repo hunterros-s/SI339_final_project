@@ -46,25 +46,25 @@ function set_dark_theme() {
     document.documentElement.style.setProperty("--color-italic", "#50fa7b");
     document.documentElement.style.setProperty("--color-string", "#f1fa8c");
     document.documentElement.style.setProperty("--color-number", "#bd93f9");
-    document.documentElement.style.setProperty("--color-comment", "#6272a4");
+    document.documentElement.style.setProperty("--color-comment", "#acc0ff");
 }
 
 // light theme
 function set_light_theme() {
     document.documentElement.style.setProperty("--text-color", "#232333");
     document.documentElement.style.setProperty("--background-color", "#fff");
-    document.documentElement.style.setProperty("--outline-color", "#BCBEC0");
+    document.documentElement.style.setProperty("--outline-color", "#f1f1f1");
     document.documentElement.style.setProperty("--time-color", "#757575");
 
     // Set CSS variables for the light theme
-    document.documentElement.style.setProperty("--background-code", "#f7f7f7");
-    document.documentElement.style.setProperty("--color-built-in", "#3e999f");
-    document.documentElement.style.setProperty("--color-keyword", "#f5871f");
-    document.documentElement.style.setProperty("--color-text", "#2f2d2d");
-    document.documentElement.style.setProperty("--color-italic", "#718c00");
-    document.documentElement.style.setProperty("--color-string", "#0022ea");
-    document.documentElement.style.setProperty("--color-number", "#8959a8");
-    document.documentElement.style.setProperty("--color-comment", "#8f958a");
+    document.documentElement.style.setProperty("--background-code", "#fefefe");
+    document.documentElement.style.setProperty("--color-built-in", "#008089");
+    document.documentElement.style.setProperty("--color-keyword", "#7928a1");
+    document.documentElement.style.setProperty("--color-text", "#545454");
+    document.documentElement.style.setProperty("--color-italic", "#007faa");
+    document.documentElement.style.setProperty("--color-string", "#008000");
+    document.documentElement.style.setProperty("--color-number", "#aa5d00");
+    document.documentElement.style.setProperty("--color-comment", "#696969");
 }
 
 const theme_enabled = localStorage.getItem("darkTheme");

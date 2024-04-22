@@ -52,6 +52,7 @@
   color: var(--color-italic);
 }
 
+.hljs-meta .hljs-string,  /* weird edge case */
 .hljs-string,
 .hljs-meta,
 .hljs-name,
