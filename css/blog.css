@@ -129,3 +129,8 @@ input[type="color"] {
     outline: 1px dotted #212121;
     outline: 5px auto -webkit-focus-ring-color;
 }
+
+pre > code {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
