@@ -27,6 +27,101 @@
     </header>
     <main>
         <h2>A simple instagram clone</h2>
+        <p>This project involved building a client-side dynamic version of a simple Instagram-like web application, an Instagram clone, using React.js and interacting with a RESTful API.</p>
+        <h2>Creating a simple REST API</h2>
+        <p>One of the main tasks was to refactor the existing server-side code from a previous server-side Instagram-like into a RESTful API. I started by defining the API routes and their corresponding handler functions. The API routes included endpoints for retrieving posts, likes, and comments, as well as creating and deleting likes and comments.</p>
+        <pre><code>"""Insta485 REST API."""
+
+from insta485.api.services import get_services
+from insta485.api.posts import get_posts
+from insta485.api.posts import get_post
+from insta485.api.likes import like
+from insta485.api.likes import unlike
+from insta485.api.comments import comment
+from insta485.api.comments import delete_comment</code></pre>
+        <p>Implementing pagination for the /api/v1/posts/ endpoint was a bit tricky. I had to handle query parameters like size, page, and postid_lte to control the number of posts returned and the starting point for the pagination. Another challenge was implementing access control. Most API routes required authentication, either through session cookies or HTTP Basic Access Authentication. I had to ensure that unauthorized users could not access protected routes.</p>
+        <pre><code>@insta485.app.route('/api/v1/posts/')
+def get_posts():
+    """Return the 10 newest posts."""
+    auth, username = insta485.check_if_logged_in()
+    if not auth:
+        flask.abort(403)
+
+    # connect to db
+    connection = insta485.model.get_db()
+
+    latest_post_id = flask.request.args.get("postid_lte", type=int)
+    size = flask.request.args.get("size", default=10, type=int)
+    page = flask.request.args.get("page", default=0, type=int)
+    ...</code></pre>
+        <pre><code>def check_if_logged_in():
+    """AUTHENTICATE API CALL. RETURNS bool, username."""
+    if 'username' in flask.session:
+        return True, flask.session['username']
+
+    if not flask.request.authorization:
+        return False, None
+
+    login_username = flask.request.authorization['username']
+    login_password = flask.request.authorization['password']
+
+    authed, username = login_helper(login_username, login_password)
+
+    if authed:
+        flask.session['username'] = username
+        return True, username
+    return False, None</code></pre>
+        <h2>Developing the Client-side Application</h2>
+        <p>The next major step was to build the client-side application using React.js. I started by following a React/JS Tutorial, which helped me set up a basic React development environment and create a "hello world" React app.</p>
+        <p>Then, I gradually built the main feed component, which would display the posts fetched from the REST API. I began with a mock-up and hard-coded data, and then gradually added features like fetching data from the API, rendering comments and likes, and implementing user interactions like liking/unliking posts and adding/deleting comments.</p>
+        <pre><code>import React from "react";
+import PropTypes from "prop-types";
+
+export default function Likes({ count, clicked }) {
+    return (
+    <button type="button" data-testid="like-unlike-button" onClick={clicked}>
+        {`${count} ${count === 1 ? "like" : "likes"}`}
+    </button>
+    );
+}
+
+Likes.propTypes = {
+    count: PropTypes.number.isRequired,
+    clicked: PropTypes.func.isRequired,
+};</code></pre>
+        <p>One of the challenges I faced was ensuring that the application rendered correctly even before the fetched data arrived. React's component lifecycle methods and hooks played a crucial role in handling this scenario.</p>
+        <p>Implementing the "like" and "comment" functionality was also quite involved. I had to make sure that the changes made by the logged-in user were immediately reflected in the user interface without a page reload. This required careful state management and efficient use of the useEffect hook to handle side effects.</p>
+        <p>Another feature I implemented was the "double-click to like" functionality. This required detecting double-click events on the post images and updating the like state accordingly.</p>
+        <p>Infinite scrolling was another interesting feature to implement. As the user scrolled to the bottom of the page, I had to fetch and display the next set of posts from the API, appending them to the existing feed. I used the react-infinite-scroll-component library to simplify this task.</p>
+        <pre><code>const [nextUrl, setNextUrl] = useState("/api/v1/posts/");
+
+const fetchMoreData = () => {
+    fetch(nextUrl, { credentials: "same-origin" })
+    .then((response) => {
+        if (!response.ok) throw Error(response.statusText);
+        return response.json();
+    })
+    .then((data) => {
+        console.log(data);
+        setMoreData(data.next !== "")
+        const newData = data.results;
+        setItems([...items, ...newData]); // Update the state with the new data
+        setNextUrl(data.next); // Update the next page
+    })
+    .catch((error) => console.log(error));
+};
+
+useEffect(fetchMoreData, [fetchMoreData]);</code></pre>
+        <h2>Testing and Deployment</h2>
+        <p>Throughout the development process, I regularly tested my code using the provided unit tests and end-to-end tests. The end-to-end tests, powered by Cypress, were particularly helpful in ensuring that the client-side application worked as expected in different scenarios.</p>
+        <p>Once the development was complete, I deployed the application to an AWS EC2 instance, providing public access to my site. (It is not longer accessible unfortunately)</p>
+        <h2>Code Style and Best Practices</h2>
+        <p>Maintaining good code style and following best practices was an essential part of this project. I used ESLint to enforce the AirBnB JavaScript coding standard for my React code, and Prettier to automatically format the code according to the specified rules.</p>
+        <p>For the Python code, I used tools like pycodestyle, pydocstyle, and pylint to ensure that my code adhered to the Python style guidelines and best practices.</p>
+        <h2>Conclusion</h2>
+        <p>Implementing the client-side Instagram clone was a challenging yet rewarding experience. It gave me hands-on experience with building client-side dynamic web applications using React.js, interacting with a RESTful API, and handling various user interactions and features.</p>
+        <p>Throughout the project, I learned valuable lessons in project setup, version control, building APIs, state management in React, testing, deployment, and code style enforcement. These skills will undoubtedly be valuable as I continue my journey as a software developer.</p>
+        <p>If you're a fellow student or developer interested in learning more about this project or have any questions, feel free to reach out to me. </p>
     </main>
     <footer>
         <a href="mailto:hlross@umich.edu">email</a>
